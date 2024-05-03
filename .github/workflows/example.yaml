@@ -1,7 +1,5 @@
 name: Pull Request Comment Trigger Example
 on:
-  pull_request:
-    types: [opened]
   issue_comment:
     types: [created]
 
@@ -11,6 +9,8 @@ jobs:
     # if: contains(github.event.comment.html_url, '/pull/')    # check if the comments come from pull request, exclude those from issue.
     steps:
     - name: say hello
+      env:
+        GH_TOKEN: ${{ github.token }}
       # if: contains(github.event.comment.body, '/rebase')   # check the comment if it contains the keywords
       run: 'gh pr create --title "merge-main-into-staging" --body "merge-main-into-staging" --base staging'
   hello2:
