@@ -7,13 +7,13 @@ on:
 
 jobs:
   rebase:
-    runs-on: [ubuntu-latest]
+    runs-on: ubuntu-latest
     # if: contains(github.event.comment.html_url, '/pull/')    # check if the comments come from pull request, exclude those from issue.
     steps:
     - name: say hello
       # if: contains(github.event.comment.body, '/rebase')   # check the comment if it contains the keywords
       run: 'gh pr create --title "merge-main-into-staging" --body "merge-main-into-staging" --base staging'
-  hello:
+  hello2:
     runs-on: ubuntu-latest
     steps:
       - uses: khan/pull-request-comment-trigger@master
