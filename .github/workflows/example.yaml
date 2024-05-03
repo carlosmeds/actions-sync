@@ -10,7 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     # if: contains(github.event.comment.html_url, '/pull/')    # check if the comments come from pull request, exclude those from issue.
     steps:
-    - name: say hello
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: please merge
       env:
         GH_TOKEN: ${{ github.token }}
       # if: contains(github.event.comment.body, '/rebase')   # check the comment if it contains the keywords
