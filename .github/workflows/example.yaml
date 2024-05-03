@@ -1,3 +1,7 @@
+---
+permissions:
+  contents: write
+
 name: Pull Request Comment Trigger Example
 on:
   pull_request:
