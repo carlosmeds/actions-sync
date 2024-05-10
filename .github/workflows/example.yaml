@@ -16,7 +16,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          PR_COUNT=$(gh pr list --base staging --head main --json number -q "length(data.repository.pullRequests.nodes)")
+          PR_COUNT=$(gh pr list --base staging --head main | wc -l)
           if [ "$PR_COUNT" -gt 0 ]; then
             echo "PR already exists"
             exit 1
@@ -38,7 +38,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          PR_COUNT=$(gh pr list --base develop --head staging --json number -q "length(data.repository.pullRequests.nodes)")
+          PR_COUNT=$(gh pr list --base develop --head staging | wc -l)
           if [ "$PR_COUNT" -gt 0 ]; then
             echo "PR already exists"
             exit 1
