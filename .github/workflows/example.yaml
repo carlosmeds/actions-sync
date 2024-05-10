@@ -14,7 +14,7 @@ jobs:
           ref: main
       - name: Check for existing PR
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           PR_COUNT=$(gh pr list --base staging --head main --json number -q "length(data.repository.pullRequests.nodes)")
           if [ "$PR_COUNT" -gt 0 ]; then
@@ -36,7 +36,7 @@ jobs:
           ref: staging
       - name: Check for existing PR
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           PR_COUNT=$(gh pr list --base develop --head staging --json number -q "length(data.repository.pullRequests.nodes)")
           if [ "$PR_COUNT" -gt 0 ]; then
