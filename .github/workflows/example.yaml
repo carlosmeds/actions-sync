@@ -1,43 +1,30 @@
 name: Pull Request Comment Trigger Example
 on:
-  pull_request:
-    types: [opened]
   issue_comment:
     types: [created]
 
 jobs:
-  hello:
+  rebase-stg:
     runs-on: ubuntu-latest
     steps:
-      - uses: khan/pull-request-comment-trigger@master
-        id: check
+      - name: Checkout code
+        uses: actions/checkout@v2
         with:
-          trigger: '#hello'
-      - run: 'echo Found it!'
-        if: steps.check.outputs.triggered == 'true'
-
-  eyes:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: khan/pull-request-comment-trigger@master
-        id: check
-        with:
-          trigger: '#look'
-          reaction: eyes
+          ref: main
+      - name: please merge
         env:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-      - run: 'echo Found it!'
-        if: steps.check.outputs.triggered == 'true'
-
-  rocket:
+          GH_TOKEN: ${{ github.token }}
+        if: contains(github.event.comment.body, '/rebase-stg')
+        run: 'gh pr create --title "merge-main-into-staging" --body "merge-main-into-staging" --base staging'
+  rebase-dev:
     runs-on: ubuntu-latest
     steps:
-      - uses: khan/pull-request-comment-trigger@master
-        id: check
+      - name: Checkout code
+        uses: actions/checkout@v2
         with:
-          trigger: '#deploy'
-          reaction: rocket
+          ref: staging
+      - name: please merge
         env:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-      - run: 'echo Found it!'
-        if: steps.check.outputs.triggered == 'true'
+          GH_TOKEN: ${{ github.token }}
+        if: contains(github.event.comment.body, '/rebase-dev')
+        run: 'gh pr create --title "merge-staging-into-develop" --body "merge-staging-into-develop" --base develop'
