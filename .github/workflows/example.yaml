@@ -1,7 +1,5 @@
 name: Pull Request Comment Trigger Example
 on:
-  pull_request:
-    types: [opened]
   issue_comment:
     types: [created]
 
@@ -10,47 +8,12 @@ jobs:
     runs-on: ubuntu-latest
     # if: contains(github.event.comment.html_url, '/pull/')    # check if the comments come from pull request, exclude those from issue.
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-      with:
-        ref: main
-    - name: please merge
-      env:
-        GH_TOKEN: ${{ github.token }}
-      # if: contains(github.event.comment.body, '/rebase')   # check the comment if it contains the keywords
-      run: 'gh pr create --title "merge-main-into-staging" --body "merge-main-into-staging" --base staging'
-  hello2:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: khan/pull-request-comment-trigger@master
-        id: check
+      - name: Checkout code
+        uses: actions/checkout@v2
         with:
-          trigger: '#hello'
-      - run: 'echo Found it!'
-        if: steps.check.outputs.triggered == 'true'
-
-  eyes:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: khan/pull-request-comment-trigger@master
-        id: check
-        with:
-          trigger: '#look'
-          reaction: eyes
+          ref: main
+      - name: please merge
         env:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-      - run: 'echo Found it!'
-        if: steps.check.outputs.triggered == 'true'
-
-  rocket:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: khan/pull-request-comment-trigger@master
-        id: check
-        with:
-          trigger: '#deploy'
-          reaction: rocket
-        env:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-      - run: 'echo Found it!'
-        if: steps.check.outputs.triggered == 'true'
+          GH_TOKEN: ${{ github.token }}
+        if: contains(github.event.comment.body, '/rebase')
+        run: 'gh pr create --title "merge-main-into-staging" --body "merge-main-into-staging" --base staging'
