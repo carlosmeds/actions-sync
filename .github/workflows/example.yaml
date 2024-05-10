@@ -6,6 +6,7 @@ on:
 jobs:
   rebase-stg:
     runs-on: ubuntu-latest
+    if: contains(github.event.comment.html_url, '/pull/')
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -18,6 +19,7 @@ jobs:
         run: 'gh pr create --title "merge-main-into-staging" --body "merge-main-into-staging" --base staging'
   rebase-dev:
     runs-on: ubuntu-latest
+    if: contains(github.event.comment.html_url, '/pull/')
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
