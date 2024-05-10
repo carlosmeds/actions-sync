@@ -6,11 +6,21 @@ on:
 jobs:
   rebase-stg:
     runs-on: ubuntu-latest
+    if: contains(github.event.comment.html_url, '/pull/')
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
           ref: main
+      - name: Check for existing PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PR_COUNT=$(gh pr list --base staging --head main --json number -q "length(data.repository.pullRequests.nodes)")
+          if [ "$PR_COUNT" -gt 0 ]; then
+            echo "PR already exists"
+            exit 1
+          fi
       - name: please merge
         env:
           GH_TOKEN: ${{ github.token }}
@@ -18,11 +28,21 @@ jobs:
         run: 'gh pr create --title "merge-main-into-staging" --body "merge-main-into-staging" --base staging'
   rebase-dev:
     runs-on: ubuntu-latest
+    if: contains(github.event.comment.html_url, '/pull/')
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
           ref: staging
+      - name: Check for existing PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PR_COUNT=$(gh pr list --base develop --head staging --json number -q "length(data.repository.pullRequests.nodes)")
+          if [ "$PR_COUNT" -gt 0 ]; then
+            echo "PR already exists"
+            exit 1
+          fi
       - name: please merge
         env:
           GH_TOKEN: ${{ github.token }}
