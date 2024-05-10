@@ -19,8 +19,7 @@ jobs:
           PR_COUNT=$(gh pr list --base staging --head main | wc -l)
           if [ "$PR_COUNT" -gt 0 ]; then
             echo "PR already exists"
-            echo "::set-output name=skip::true"
-            exit 1
+            exit 0
           fi
       - name: please merge
         env:
@@ -42,8 +41,7 @@ jobs:
           PR_COUNT=$(gh pr list --base develop --head staging | wc -l)
           if [ "$PR_COUNT" -gt 0 ]; then
             echo "PR already exists"
-            echo "::set-output name=skip::true"
-            exit 1
+            exit 0
           fi
       - name: please merge
         env:
