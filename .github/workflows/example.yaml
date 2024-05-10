@@ -4,9 +4,8 @@ on:
     types: [created]
 
 jobs:
-  rebase:
+  rebase-stg:
     runs-on: ubuntu-latest
-    # if: contains(github.event.comment.html_url, '/pull/')    # check if the comments come from pull request, exclude those from issue.
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -15,5 +14,17 @@ jobs:
       - name: please merge
         env:
           GH_TOKEN: ${{ github.token }}
-        if: contains(github.event.comment.body, '/rebase')
+        if: contains(github.event.comment.body, '/rebase-stg')
         run: 'gh pr create --title "merge-main-into-staging" --body "merge-main-into-staging" --base staging'
+  rebase-dev:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: staging
+      - name: please merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+        if: contains(github.event.comment.body, '/rebase-dev')
+        run: 'gh pr create --title "merge-staging-into-develop" --body "merge-staging-into-develop" --base develop'
