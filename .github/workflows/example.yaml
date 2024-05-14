@@ -1,4 +1,4 @@
-name: Pull Request Comment Trigger Example
+name: Pull Request
 on:
   issue_comment:
     types: [created]
@@ -13,18 +13,22 @@ jobs:
         with:
           ref: main
       - name: Check for existing PR
+        id: check_stg_pr
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          PR_COUNT=$(gh pr list --base staging --head main --json number -q "length(data.repository.pullRequests.nodes)")
+          PR_COUNT=$(gh pr list --base staging --head main | wc -l)
           if [ "$PR_COUNT" -gt 0 ]; then
             echo "PR already exists"
-            exit 1
+            echo "pr_exists=1" >> $GITHUB_OUTPUT
+          else
+            echo "pr_exists=0" >> $GITHUB_OUTPUT
           fi
-      - name: please merge
+      - name: Create PR
         env:
           GH_TOKEN: ${{ github.token }}
-        if: contains(github.event.comment.body, '/rebase-stg')
+          CHECK_STG_PR: ${{ steps.check_stg_pr.outputs.pr_exists }} 
+        if: contains(github.event.comment.body, '/rebase-stg') && env.CHECK_STG_PR == '0'
         run: 'gh pr create --title "merge-main-into-staging" --body "merge-main-into-staging" --base staging'
   rebase-dev:
     runs-on: ubuntu-latest
@@ -35,16 +39,20 @@ jobs:
         with:
           ref: staging
       - name: Check for existing PR
+        id: check_dev_pr
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          PR_COUNT=$(gh pr list --base develop --head staging --json number -q "length(data.repository.pullRequests.nodes)")
+          PR_COUNT=$(gh pr list --base develop --head staging | wc -l)
           if [ "$PR_COUNT" -gt 0 ]; then
             echo "PR already exists"
-            exit 1
+            echo "pr_exists=1" >> $GITHUB_OUTPUT
+          else
+            echo "pr_exists=0" >> $GITHUB_OUTPUT
           fi
-      - name: please merge
+      - name: Create PR
         env:
           GH_TOKEN: ${{ github.token }}
-        if: contains(github.event.comment.body, '/rebase-dev')
+          CHECK_DEV_PR: ${{ steps.check_dev_pr.outputs.pr_exists }} 
+        if: contains(github.event.comment.body, '/rebase-dev') && env.CHECK_DEV_PR == '0'
         run: 'gh pr create --title "merge-staging-into-develop" --body "merge-staging-into-develop" --base develop'
